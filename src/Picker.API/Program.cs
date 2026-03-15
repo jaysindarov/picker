@@ -10,6 +10,14 @@ using Picker.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+        policy.WithOrigins("http://localhost:5173", "http://localhost:4173")
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -55,6 +63,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+app.UseCors("Frontend");
 app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())

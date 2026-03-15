@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Picker.Domain.Models;
 using Picker.Domain.Interfaces.Repositories;
-
 using Picker.Infrastructure.Data;
 
 namespace Picker.Infrastructure.Repositories;
@@ -15,6 +14,7 @@ public class BookRepository : GenericRepository<Book>, IBookRepository
         var query = _context.Books
             .Include(b => b.Genre)
             .Include(b => b.Comments)
+            .Include(b => b.Ratings)
             .AsQueryable();
 
         if (genreId.HasValue)
@@ -27,6 +27,7 @@ public class BookRepository : GenericRepository<Book>, IBookRepository
         await _context.Books
             .Include(b => b.Genre)
             .Include(b => b.Comments)
+            .Include(b => b.Ratings)
             .FirstOrDefaultAsync(b => b.Id == id);
 
     public async Task<Book?> GetRandomAsync(Guid? genreId = null)
@@ -34,6 +35,7 @@ public class BookRepository : GenericRepository<Book>, IBookRepository
         var query = _context.Books
             .Include(b => b.Genre)
             .Include(b => b.Comments)
+            .Include(b => b.Ratings)
             .AsQueryable();
 
         if (genreId.HasValue)

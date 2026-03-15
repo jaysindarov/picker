@@ -1,15 +1,14 @@
 using Picker.Domain.Enums;
 
-namespace Picker.Application.DTOs.Comment;
+namespace Picker.Application.DTOs.Rating;
 
-public class CommentDto
+public class RatingDto
 {
     public Guid Id { get; set; }
-    public string Content { get; set; } = string.Empty;
-    public string AuthorName { get; set; } = string.Empty;
-    public string? UserId { get; set; }
+    public string UserId { get; set; } = string.Empty;
     public CategoryType CategoryType { get; set; }
     public Guid ItemId { get; set; }
+    public int Value { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

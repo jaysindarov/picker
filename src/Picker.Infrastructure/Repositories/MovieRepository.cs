@@ -14,6 +14,7 @@ public class MovieRepository : GenericRepository<Movie>, IMovieRepository
         var query = _context.Movies
             .Include(m => m.Genre)
             .Include(m => m.Comments)
+            .Include(m => m.Ratings)
             .AsQueryable();
 
         if (genreId.HasValue)
@@ -26,6 +27,7 @@ public class MovieRepository : GenericRepository<Movie>, IMovieRepository
         await _context.Movies
             .Include(m => m.Genre)
             .Include(m => m.Comments)
+            .Include(m => m.Ratings)
             .FirstOrDefaultAsync(m => m.Id == id);
 
     public async Task<Movie?> GetRandomAsync(Guid? genreId = null)
@@ -33,6 +35,7 @@ public class MovieRepository : GenericRepository<Movie>, IMovieRepository
         var query = _context.Movies
             .Include(m => m.Genre)
             .Include(m => m.Comments)
+            .Include(m => m.Ratings)
             .AsQueryable();
 
         if (genreId.HasValue)

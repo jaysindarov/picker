@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Picker.Application.DTOs.Genre;
 using Picker.Application.Services.Interfaces;
@@ -6,6 +7,7 @@ namespace Picker.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class GenresController : ControllerBase
 {
     private readonly IGenreService _service;
@@ -20,11 +22,12 @@ public class GenresController : ControllerBase
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
-    { 
+    {
         return Ok(await _service.GetByIdAsync(id));
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] CreateGenreDto dto)
     {
         var result = await _service.CreateAsync(dto);
@@ -32,12 +35,14 @@ public class GenresController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateGenreDto dto)
     {
         return Ok(await _service.UpdateAsync(id, dto));
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _service.DeleteAsync(id);

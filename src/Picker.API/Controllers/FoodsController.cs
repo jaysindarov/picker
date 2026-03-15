@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Picker.Application.DTOs.Food;
 using Picker.Application.Services.Interfaces;
@@ -6,6 +7,7 @@ namespace Picker.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class FoodsController : ControllerBase
 {
     private readonly IFoodService _service;
@@ -31,6 +33,7 @@ public class FoodsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] CreateFoodDto dto)
     {
         var result = await _service.CreateAsync(dto);
@@ -38,12 +41,14 @@ public class FoodsController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateFoodDto dto)
     {
         return Ok(await _service.UpdateAsync(id, dto));
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _service.DeleteAsync(id);

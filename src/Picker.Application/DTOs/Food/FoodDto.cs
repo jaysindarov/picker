@@ -11,6 +11,8 @@ public class FoodDto
     public Guid CuisineId { get; set; }
     public string CuisineName { get; set; } = string.Empty;
     public List<CommentDto> Comments { get; set; } = new();
+    public double? AverageRating { get; set; }
+    public int TotalRatings { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

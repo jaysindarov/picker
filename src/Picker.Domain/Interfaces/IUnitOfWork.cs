@@ -10,6 +10,7 @@ public interface IUnitOfWork : IDisposable
     ICuisineRepository Cuisines { get; }
     IGenreRepository Genres { get; }
     ICommentRepository Comments { get; }
+    IRatingRepository Ratings { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

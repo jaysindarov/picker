@@ -92,11 +92,14 @@ public class FoodService : IFoodService
             Id = c.Id,
             Content = c.Content,
             AuthorName = c.AuthorName,
+            UserId = c.UserId,
             CategoryType = c.CategoryType,
             ItemId = c.ItemId,
             CreatedAt = c.CreatedAt,
             UpdatedAt = c.UpdatedAt
         }).ToList(),
+        AverageRating = f.Ratings.Count > 0 ? Math.Round(f.Ratings.Average(r => (double)r.Value), 2) : null,
+        TotalRatings = f.Ratings.Count,
         CreatedAt = f.CreatedAt,
         UpdatedAt = f.UpdatedAt
     };

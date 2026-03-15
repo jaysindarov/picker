@@ -14,6 +14,7 @@ public class FoodRepository : GenericRepository<Food>, IFoodRepository
         var query = _context.Foods
             .Include(f => f.Cuisine)
             .Include(f => f.Comments)
+            .Include(f => f.Ratings)
             .AsQueryable();
 
         if (cuisineId.HasValue)
@@ -26,6 +27,7 @@ public class FoodRepository : GenericRepository<Food>, IFoodRepository
         await _context.Foods
             .Include(f => f.Cuisine)
             .Include(f => f.Comments)
+            .Include(f => f.Ratings)
             .FirstOrDefaultAsync(f => f.Id == id);
 
     public async Task<Food?> GetRandomAsync(Guid? cuisineId = null)
@@ -33,6 +35,7 @@ public class FoodRepository : GenericRepository<Food>, IFoodRepository
         var query = _context.Foods
             .Include(f => f.Cuisine)
             .Include(f => f.Comments)
+            .Include(f => f.Ratings)
             .AsQueryable();
 
         if (cuisineId.HasValue)

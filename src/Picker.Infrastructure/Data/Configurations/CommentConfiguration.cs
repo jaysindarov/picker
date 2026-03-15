@@ -11,6 +11,7 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
         builder.HasKey(c => c.Id);
         builder.Property(c => c.Content).IsRequired().HasMaxLength(1000);
         builder.Property(c => c.AuthorName).IsRequired().HasMaxLength(100);
+        builder.Property(c => c.UserId).HasMaxLength(450).IsRequired(false);
 
         builder.HasOne(c => c.Food)
             .WithMany(f => f.Comments)

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Picker.Domain.Entities;
+using Picker.Domain.Models;
 
 namespace Picker.Infrastructure.Data.Configurations;
 

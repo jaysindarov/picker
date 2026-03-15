@@ -13,12 +13,16 @@ public class GenresController : ControllerBase
     public GenresController(IGenreService service) => _service = service;
 
     [HttpGet]
-    public async Task<IActionResult> GetAll() =>
-        Ok(await _service.GetAllAsync());
+    public async Task<IActionResult> GetAll()
+    {
+        return Ok(await _service.GetAllAsync());
+    }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id) =>
-        Ok(await _service.GetByIdAsync(id));
+    public async Task<IActionResult> GetById(Guid id)
+    { 
+        return Ok(await _service.GetByIdAsync(id));
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateGenreDto dto)
@@ -28,8 +32,10 @@ public class GenresController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateGenreDto dto) =>
-        Ok(await _service.UpdateAsync(id, dto));
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateGenreDto dto)
+    {
+        return Ok(await _service.UpdateAsync(id, dto));
+    }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)

@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Picker.Domain.Entities;
+using Picker.Domain.Models;
 using Picker.Domain.Interfaces.Repositories;
 using Picker.Infrastructure.Data;
 

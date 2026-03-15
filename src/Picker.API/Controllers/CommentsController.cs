@@ -14,8 +14,10 @@ public class CommentsController : ControllerBase
     public CommentsController(ICommentService service) => _service = service;
 
     [HttpGet]
-    public async Task<IActionResult> GetByItem([FromQuery] Guid itemId, [FromQuery] CategoryType categoryType) =>
-        Ok(await _service.GetByItemAsync(itemId, categoryType));
+    public async Task<IActionResult> GetByItem([FromQuery] Guid itemId, [FromQuery] CategoryType categoryType)
+    {
+        return Ok(await _service.GetByItemAsync(itemId, categoryType));
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateCommentDto dto)
@@ -25,8 +27,10 @@ public class CommentsController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id) =>
-        Ok(await _service.GetByIdAsync(id));
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        return Ok(await _service.GetByIdAsync(id));
+    }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)

@@ -1,4 +1,4 @@
-namespace Picker.Domain.Entities;
+namespace Picker.Domain.Models;
 
 public class Genre : BaseEntity
 {

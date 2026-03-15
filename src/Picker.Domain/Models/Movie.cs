@@ -1,6 +1,6 @@
-namespace Picker.Domain.Entities;
+namespace Picker.Domain.Models;
 
-public class Book : BaseEntity
+public class Movie : BaseEntity
 {
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;

@@ -1,7 +1,7 @@
 using Picker.Application.Common.Exceptions;
 using Picker.Application.DTOs.Cuisine;
 using Picker.Application.Services.Interfaces;
-using Picker.Domain.Entities;
+using Picker.Domain.Models;
 using Picker.Domain.Interfaces;
 
 namespace Picker.Application.Services.Implementations;

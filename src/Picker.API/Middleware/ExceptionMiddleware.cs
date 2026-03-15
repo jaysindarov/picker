@@ -18,7 +18,7 @@ public class ExceptionMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         try
-        {
+        {   
             await _next(context);
         }
         catch (NotFoundException ex)

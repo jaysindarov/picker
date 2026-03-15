@@ -1,6 +1,6 @@
 using Picker.Domain.Enums;
 
-namespace Picker.Domain.Entities;
+namespace Picker.Domain.Models;
 
 public class Comment : BaseEntity
 {

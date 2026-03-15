@@ -1,4 +1,4 @@
-using Picker.Domain.Entities;
+using Picker.Domain.Models;
 using Picker.Domain.Enums;
 
 namespace Picker.Domain.Interfaces.Repositories;

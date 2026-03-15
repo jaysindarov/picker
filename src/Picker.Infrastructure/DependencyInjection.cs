@@ -23,8 +23,8 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-        // Identity
-        services.AddIdentity<AppUser, IdentityRole>(options =>
+        // Identity — use AddIdentityCore to avoid cookie auth overriding JWT defaults
+        services.AddIdentityCore<AppUser>(options =>
         {
             options.Password.RequireDigit = false;
             options.Password.RequireLowercase = false;
@@ -32,6 +32,8 @@ public static class DependencyInjection
             options.Password.RequireUppercase = false;
             options.Password.RequiredLength = 6;
         })
+        .AddRoles<IdentityRole>()
+        .AddSignInManager()
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
@@ -58,6 +60,7 @@ public static class DependencyInjection
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
             };
         })
+        .AddCookie(IdentityConstants.ExternalScheme)
         .AddGoogle(options =>
         {
             options.ClientId = configuration["Authentication:Google:ClientId"]

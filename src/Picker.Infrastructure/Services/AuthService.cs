@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Picker.Application.Common.Exceptions;
 using Picker.Application.DTOs.Auth;
 using Picker.Application.Services.Interfaces;
 using Picker.Infrastructure.Identity;
@@ -21,14 +22,53 @@ public class AuthService : IAuthService
         _config = config;
     }
 
+    // ── Email / Password ────────────────────────────────────────────────────
+
+    public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
+    {
+        if (await _userManager.FindByEmailAsync(dto.Email) is not null)
+            throw new BadRequestException("An account with this email already exists.");
+
+        var user = new AppUser
+        {
+            UserName = dto.Email,
+            Email = dto.Email,
+            DisplayName = dto.DisplayName,
+            EmailConfirmed = true
+        };
+
+        var result = await _userManager.CreateAsync(user, dto.Password);
+        if (!result.Succeeded)
+            throw new BadRequestException(string.Join(" | ", result.Errors.Select(e => e.Description)));
+
+        var role = IsAdminEmail(dto.Email) ? "Admin" : "User";
+        await _userManager.AddToRoleAsync(user, role);
+
+        return BuildResponse(user, role);
+    }
+
+    public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
+    {
+        var user = await _userManager.FindByEmailAsync(dto.Email)
+            ?? throw new BadRequestException("Invalid email or password.");
+
+        if (!await _userManager.CheckPasswordAsync(user, dto.Password))
+            throw new BadRequestException("Invalid email or password.");
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var role = roles.FirstOrDefault() ?? "User";
+
+        return BuildResponse(user, role);
+    }
+
+    // ── Google OAuth ─────────────────────────────────────────────────────────
+
     public async Task<AuthResponseDto> CreateOrUpdateGoogleUserAsync(string googleId, string email, string name)
     {
-        // Find by existing Google login
         var user = await _userManager.FindByLoginAsync("Google", googleId);
 
         if (user is null)
         {
-            // Try by email (user may have registered another way)
             user = await _userManager.FindByEmailAsync(email);
 
             if (user is null)
@@ -47,17 +87,34 @@ public class AuthService : IAuthService
 
             await _userManager.AddLoginAsync(user, new UserLoginInfo("Google", googleId, "Google"));
 
-            // Assign User role if none assigned yet
-            var existingRoles = await _userManager.GetRolesAsync(user);
-            if (!existingRoles.Any())
-                await _userManager.AddToRoleAsync(user, "User");
+            var existing = await _userManager.GetRolesAsync(user);
+            if (!existing.Any())
+            {
+                var role = IsAdminEmail(email) ? "Admin" : "User";
+                await _userManager.AddToRoleAsync(user, role);
+            }
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var role = roles.FirstOrDefault() ?? "User";
+        var assignedRole = roles.FirstOrDefault() ?? "User";
+        return BuildResponse(user, assignedRole);
+    }
 
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Checks the AdminSettings:AdminEmails array in appsettings.
+    /// Any email listed there is automatically given the Admin role at registration/first login.
+    /// </summary>
+    private bool IsAdminEmail(string email)
+    {
+        var adminEmails = _config.GetSection("AdminSettings:AdminEmails").Get<string[]>() ?? [];
+        return adminEmails.Contains(email, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private AuthResponseDto BuildResponse(AppUser user, string role)
+    {
         var (token, expiresAt) = GenerateJwtToken(user, role);
-
         return new AuthResponseDto
         {
             Token = token,
@@ -85,6 +142,7 @@ public class AuthService : IAuthService
             new Claim(JwtRegisteredClaimNames.Email, user.Email!),
             new Claim(JwtRegisteredClaimNames.Name, user.DisplayName),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Role, role)
         };
 

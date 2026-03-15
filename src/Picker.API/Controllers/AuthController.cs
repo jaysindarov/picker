@@ -1,9 +1,9 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Picker.Application.DTOs.Auth;
 using Picker.Application.Services.Interfaces;
 using Picker.Infrastructure.Identity;
 
@@ -22,7 +22,36 @@ public class AuthController : ControllerBase
         _signInManager = signInManager;
     }
 
-    /// <summary>Redirect to Google OAuth sign-in page.</summary>
+    // ── Email / Password ─────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Register a new account with email and password.
+    /// The role is automatically set to "Admin" if the email is listed in
+    /// AdminSettings:AdminEmails in appsettings.json; otherwise "User".
+    /// </summary>
+    [HttpPost("register")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+    {
+        var result = await _authService.RegisterAsync(dto);
+        return CreatedAtAction(nameof(Me), result);
+    }
+
+    /// <summary>Login with email and password. Returns a JWT token.</summary>
+    [HttpPost("login")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    {
+        var result = await _authService.LoginAsync(dto);
+        return Ok(result);
+    }
+
+    // ── Google OAuth ──────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Redirect to Google sign-in. After successful auth Google redirects back
+    /// to /api/auth/callback/google which returns a JWT token.
+    /// </summary>
     [HttpGet("signin/google")]
     [AllowAnonymous]
     public IActionResult GoogleSignIn()
@@ -53,7 +82,9 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-    /// <summary>Returns current authenticated user info.</summary>
+    // ── Misc ──────────────────────────────────────────────────────────────────
+
+    /// <summary>Returns the current authenticated user's profile.</summary>
     [HttpGet("me")]
     [Authorize]
     public IActionResult Me()

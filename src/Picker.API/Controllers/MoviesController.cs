@@ -13,16 +13,22 @@ public class MoviesController : ControllerBase
     public MoviesController(IMovieService service) => _service = service;
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] Guid? genreId = null) =>
-        Ok(await _service.GetAllAsync(genreId));
+    public async Task<IActionResult> GetAll([FromQuery] Guid? genreId = null)
+    {
+        return Ok(await _service.GetAllAsync(genreId));
+    }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id) =>
-        Ok(await _service.GetByIdAsync(id));
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        return Ok(await _service.GetByIdAsync(id));
+    }
 
     [HttpGet("random")]
-    public async Task<IActionResult> GetRandom([FromQuery] Guid? genreId = null) =>
-        Ok(await _service.GetRandomAsync(genreId));
+    public async Task<IActionResult> GetRandom([FromQuery] Guid? genreId = null)
+    {
+        return Ok(await _service.GetRandomAsync(genreId));
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateMovieDto dto)
@@ -32,8 +38,10 @@ public class MoviesController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateMovieDto dto) =>
-        Ok(await _service.UpdateAsync(id, dto));
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateMovieDto dto)
+    {
+        return Ok(await _service.UpdateAsync(id, dto));
+    }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)

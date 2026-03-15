@@ -1,9 +1,9 @@
 using Picker.Application.Common.Exceptions;
 using Picker.Application.DTOs.Comment;
 using Picker.Application.Services.Interfaces;
-using Picker.Domain.Models;
 using Picker.Domain.Enums;
 using Picker.Domain.Interfaces;
+using Picker.Domain.Models;
 
 namespace Picker.Application.Services.Implementations;
 
@@ -26,14 +26,15 @@ public class CommentService : ICommentService
         return MapToDto(comment);
     }
 
-    public async Task<CommentDto> CreateAsync(CreateCommentDto dto)
+    public async Task<CommentDto> CreateAsync(CreateCommentDto dto, string userId)
     {
         var comment = new Comment
         {
             Content = dto.Content,
             AuthorName = dto.AuthorName,
             CategoryType = dto.CategoryType,
-            ItemId = dto.ItemId
+            ItemId = dto.ItemId,
+            UserId = userId
         };
 
         switch (dto.CategoryType)
@@ -60,10 +61,29 @@ public class CommentService : ICommentService
         return MapToDto(comment);
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task<CommentDto> UpdateAsync(Guid id, UpdateCommentDto dto, string userId, bool isAdmin)
     {
         var comment = await _uow.Comments.GetByIdAsync(id)
             ?? throw new NotFoundException(nameof(Comment), id);
+
+        if (!isAdmin && comment.UserId != userId)
+            throw new ForbiddenException("You can only edit your own comments.");
+
+        comment.Content = dto.Content;
+        comment.UpdatedAt = DateTime.UtcNow;
+        _uow.Comments.Update(comment);
+        await _uow.SaveChangesAsync();
+        return MapToDto(comment);
+    }
+
+    public async Task DeleteAsync(Guid id, string userId, bool isAdmin)
+    {
+        var comment = await _uow.Comments.GetByIdAsync(id)
+            ?? throw new NotFoundException(nameof(Comment), id);
+
+        if (!isAdmin && comment.UserId != userId)
+            throw new ForbiddenException("You can only delete your own comments.");
+
         _uow.Comments.Delete(comment);
         await _uow.SaveChangesAsync();
     }
@@ -73,6 +93,7 @@ public class CommentService : ICommentService
         Id = c.Id,
         Content = c.Content,
         AuthorName = c.AuthorName,
+        UserId = c.UserId,
         CategoryType = c.CategoryType,
         ItemId = c.ItemId,
         CreatedAt = c.CreatedAt,

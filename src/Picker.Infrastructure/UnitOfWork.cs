@@ -15,6 +15,7 @@ public class UnitOfWork : IUnitOfWork
     public ICuisineRepository Cuisines { get; }
     public IGenreRepository Genres { get; }
     public ICommentRepository Comments { get; }
+    public IRatingRepository Ratings { get; }
 
     public UnitOfWork(AppDbContext context)
     {
@@ -25,6 +26,7 @@ public class UnitOfWork : IUnitOfWork
         Cuisines = new CuisineRepository(context);
         Genres = new GenreRepository(context);
         Comments = new CommentRepository(context);
+        Ratings = new RatingRepository(context);
     }
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) =>

@@ -8,4 +8,5 @@ public class Book : BaseEntity
     public Guid GenreId { get; set; }
     public Genre Genre { get; set; } = null!;
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    public ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 }

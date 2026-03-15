@@ -92,11 +92,14 @@ public class MovieService : IMovieService
             Id = c.Id,
             Content = c.Content,
             AuthorName = c.AuthorName,
+            UserId = c.UserId,
             CategoryType = c.CategoryType,
             ItemId = c.ItemId,
             CreatedAt = c.CreatedAt,
             UpdatedAt = c.UpdatedAt
         }).ToList(),
+        AverageRating = m.Ratings.Count > 0 ? Math.Round(m.Ratings.Average(r => (double)r.Value), 2) : null,
+        TotalRatings = m.Ratings.Count,
         CreatedAt = m.CreatedAt,
         UpdatedAt = m.UpdatedAt
     };

@@ -92,11 +92,14 @@ public class BookService : IBookService
             Id = c.Id,
             Content = c.Content,
             AuthorName = c.AuthorName,
+            UserId = c.UserId,
             CategoryType = c.CategoryType,
             ItemId = c.ItemId,
             CreatedAt = c.CreatedAt,
             UpdatedAt = c.UpdatedAt
         }).ToList(),
+        AverageRating = b.Ratings.Count > 0 ? Math.Round(b.Ratings.Average(r => (double)r.Value), 2) : null,
+        TotalRatings = b.Ratings.Count,
         CreatedAt = b.CreatedAt,
         UpdatedAt = b.UpdatedAt
     };

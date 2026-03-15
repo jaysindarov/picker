@@ -11,6 +11,8 @@ public class MovieDto
     public Guid GenreId { get; set; }
     public string GenreName { get; set; } = string.Empty;
     public List<CommentDto> Comments { get; set; } = new();
+    public double? AverageRating { get; set; }
+    public int TotalRatings { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

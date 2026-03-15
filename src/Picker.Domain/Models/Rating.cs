@@ -2,13 +2,12 @@ using Picker.Domain.Enums;
 
 namespace Picker.Domain.Models;
 
-public class Comment : BaseEntity
+public class Rating : BaseEntity
 {
-    public string Content { get; set; } = string.Empty;
-    public string AuthorName { get; set; } = string.Empty;
-    public string? UserId { get; set; }
+    public string UserId { get; set; } = string.Empty;
     public CategoryType CategoryType { get; set; }
     public Guid ItemId { get; set; }
+    public int Value { get; set; } // 1–5
 
     public Guid? FoodId { get; set; }
     public Food? Food { get; set; }

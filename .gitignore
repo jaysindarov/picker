@@ -1,0 +1,53 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Visual Studio
+.vs/
+*.rsuser
+
+## JetBrains Rider
+.idea/
+*.sln.iml
+
+## NuGet
+*.nupkg
+*.snupkg
+**/[Nn]uget.Config
+.nuget/
+packages/
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## User secrets
+**/secrets.json
+appsettings.*.json
+!appsettings.Development.json
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## Migrations (optional — remove if you want to track them)
+# **/Migrations/
+
+## Test results
+TestResults/
+*.trx
+*.coveragexml

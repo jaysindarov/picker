@@ -1,0 +1,40 @@
+using Microsoft.AspNetCore.Mvc;
+using Picker.Application.DTOs.Genre;
+using Picker.Application.Services.Interfaces;
+
+namespace Picker.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class GenresController : ControllerBase
+{
+    private readonly IGenreService _service;
+
+    public GenresController(IGenreService service) => _service = service;
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll() =>
+        Ok(await _service.GetAllAsync());
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id) =>
+        Ok(await _service.GetByIdAsync(id));
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateGenreDto dto)
+    {
+        var result = await _service.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateGenreDto dto) =>
+        Ok(await _service.UpdateAsync(id, dto));
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _service.DeleteAsync(id);
+        return NoContent();
+    }
+}

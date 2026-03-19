@@ -26,14 +26,18 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
     {
+        if (await _userManager.FindByNameAsync(dto.Username) is not null)
+            throw new BadRequestException("This username is already taken.");
+
         if (await _userManager.FindByEmailAsync(dto.Email) is not null)
             throw new BadRequestException("An account with this email already exists.");
 
         var user = new AppUser
         {
-            UserName = dto.Email,
+            UserName = dto.Username,
             Email = dto.Email,
-            DisplayName = dto.DisplayName,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
             EmailConfirmed = true
         };
 
@@ -49,11 +53,11 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
     {
-        var user = await _userManager.FindByEmailAsync(dto.Email)
-            ?? throw new BadRequestException("Invalid email or password.");
+        var user = await _userManager.FindByNameAsync(dto.Username)
+            ?? throw new BadRequestException("Invalid username or password.");
 
         if (!await _userManager.CheckPasswordAsync(user, dto.Password))
-            throw new BadRequestException("Invalid email or password.");
+            throw new BadRequestException("Invalid username or password.");
 
         var roles = await _userManager.GetRolesAsync(user);
         var role = roles.FirstOrDefault() ?? "User";
@@ -63,7 +67,7 @@ public class AuthService : IAuthService
 
     // ── Google OAuth ─────────────────────────────────────────────────────────
 
-    public async Task<AuthResponseDto> CreateOrUpdateGoogleUserAsync(string googleId, string email, string name)
+    public async Task<AuthResponseDto> CreateOrUpdateGoogleUserAsync(string googleId, string email, string firstName, string lastName)
     {
         var user = await _userManager.FindByLoginAsync("Google", googleId);
 
@@ -73,11 +77,18 @@ public class AuthService : IAuthService
 
             if (user is null)
             {
+                var baseUsername = email.Split('@')[0];
+                var username = baseUsername;
+                var suffix = 1;
+                while (await _userManager.FindByNameAsync(username) is not null)
+                    username = $"{baseUsername}{suffix++}";
+
                 user = new AppUser
                 {
-                    UserName = email,
+                    UserName = username,
                     Email = email,
-                    DisplayName = name,
+                    FirstName = firstName,
+                    LastName = lastName,
                     EmailConfirmed = true
                 };
                 var result = await _userManager.CreateAsync(user);
@@ -121,7 +132,9 @@ public class AuthService : IAuthService
             ExpiresAt = expiresAt,
             UserId = user.Id,
             Email = user.Email!,
-            DisplayName = user.DisplayName,
+            Username = user.UserName!,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
             Role = role
         };
     }
@@ -140,7 +153,9 @@ public class AuthService : IAuthService
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id),
             new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-            new Claim(JwtRegisteredClaimNames.Name, user.DisplayName),
+            new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
+            new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
+            new Claim("username", user.UserName!),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Role, role)

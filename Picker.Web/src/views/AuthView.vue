@@ -6,21 +6,23 @@ import { useAuthStore } from '@/stores/auth'
 const auth   = useAuthStore()
 const router = useRouter()
 
-const mode    = ref('login') // 'login' | 'register'
-const email   = ref('')
-const password= ref('')
-const name    = ref('')
-const error   = ref('')
-const loading = ref(false)
+const mode      = ref('login') // 'login' | 'register'
+const email     = ref('')
+const password  = ref('')
+const username  = ref('')
+const firstName = ref('')
+const lastName  = ref('')
+const error     = ref('')
+const loading   = ref(false)
 
 async function submit() {
   error.value   = ''
   loading.value = true
   try {
     if (mode.value === 'login') {
-      await auth.login(email.value, password.value)
+      await auth.login(username.value, password.value)
     } else {
-      await auth.register(email.value, password.value, name.value)
+      await auth.register(email.value, password.value, username.value, firstName.value, lastName.value)
     }
     router.push('/movies')
   } catch (e) {
@@ -73,13 +75,23 @@ function switchMode() {
         </div>
 
         <form @submit.prevent="submit" class="space-y-4">
-          <div v-if="mode === 'register'">
-            <label class="block text-xs text-white/50 mb-1.5 font-medium">Display name</label>
-            <input v-model="name" type="text" class="input" placeholder="Your name" required />
+          <div v-if="mode === 'register'" class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-white/50 mb-1.5 font-medium">First name</label>
+              <input v-model="firstName" type="text" class="input" placeholder="Jane" required />
+            </div>
+            <div>
+              <label class="block text-xs text-white/50 mb-1.5 font-medium">Last name</label>
+              <input v-model="lastName" type="text" class="input" placeholder="Doe" required />
+            </div>
           </div>
-          <div>
+          <div v-if="mode === 'register'">
             <label class="block text-xs text-white/50 mb-1.5 font-medium">Email address</label>
             <input v-model="email" type="email" class="input" placeholder="you@example.com" required />
+          </div>
+          <div>
+            <label class="block text-xs text-white/50 mb-1.5 font-medium">Username</label>
+            <input v-model="username" type="text" class="input" placeholder="janedoe" required />
           </div>
           <div>
             <label class="block text-xs text-white/50 mb-1.5 font-medium">Password</label>

@@ -34,7 +34,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
         var result = await _authService.RegisterAsync(dto);
-        return CreatedAtAction(nameof(Me), result);
+        return CreatedAtAction(nameof(CurrentUser), result);
     }
 
     /// <summary>Login with email and password. Returns a JWT token.</summary>
@@ -72,13 +72,14 @@ public class AuthController : ControllerBase
             return BadRequest(new { error = "Google authentication failed. Could not retrieve login info." });
 
         var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-        var name = info.Principal.FindFirstValue(ClaimTypes.Name) ?? email ?? "Unknown";
+        var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? string.Empty;
+        var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? string.Empty;
         var googleId = info.ProviderKey;
 
         if (string.IsNullOrEmpty(email))
             return BadRequest(new { error = "Google did not provide an email address." });
 
-        var response = await _authService.CreateOrUpdateGoogleUserAsync(googleId, email, name);
+        var response = await _authService.CreateOrUpdateGoogleUserAsync(googleId, email, firstName, lastName);
         return Ok(response);
     }
 
@@ -87,13 +88,15 @@ public class AuthController : ControllerBase
     /// <summary>Returns the current authenticated user's profile.</summary>
     [HttpGet("me")]
     [Authorize]
-    public IActionResult Me()
+    public IActionResult CurrentUser()
     {
         return Ok(new
         {
             UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
             Email = User.FindFirstValue(ClaimTypes.Email),
-            Name = User.FindFirstValue(ClaimTypes.Name),
+            Username = User.FindFirstValue("username"),
+            FirstName = User.FindFirstValue(ClaimTypes.GivenName),
+            LastName = User.FindFirstValue(ClaimTypes.Surname),
             Role = User.FindFirstValue(ClaimTypes.Role)
         });
     }

@@ -33,8 +33,10 @@ public class AdminController : ControllerBase
             result.Add(new UserInfoDto
             {
                 Id = user.Id,
-                Email = user.Email ?? string.Empty,
-                DisplayName = user.DisplayName,
+                Email = user.Email,
+                Username = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 Role = roles.FirstOrDefault() ?? "User",
                 CreatedAt = user.CreatedAt
             });

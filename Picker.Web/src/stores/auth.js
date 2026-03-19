@@ -9,13 +9,13 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!token.value)
   const isAdmin         = computed(() => user.value?.role === 'Admin')
 
-  async function login(email, password) {
-    const { data } = await authApi.login({ email, password })
+  async function login(username, password) {
+    const { data } = await authApi.login({ username, password })
     _applyAuth(data)
   }
 
-  async function register(email, password, displayName) {
-    const { data } = await authApi.register({ email, password, displayName })
+  async function register(email, password, username, firstName, lastName) {
+    const { data } = await authApi.register({ email, password, username, firstName, lastName })
     _applyAuth(data)
   }
 
@@ -23,7 +23,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!token.value) return
     try {
       const { data } = await authApi.me()
-      user.value = { userId: data.userId, email: data.email, displayName: data.name, role: data.role }
+      user.value = { userId: data.userId, email: data.email, username: data.username, firstName: data.firstName, lastName: data.lastName, role: data.role }
     } catch {
       logout()
     }
@@ -37,7 +37,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   function _applyAuth(data) {
     token.value = data.token
-    user.value  = { userId: data.userId, email: data.email, displayName: data.displayName, role: data.role }
+    user.value  = { userId: data.userId, email: data.email, username: data.username, firstName: data.firstName, lastName: data.lastName, role: data.role }
     localStorage.setItem('token', data.token)
   }
 
